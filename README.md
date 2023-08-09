@@ -4,8 +4,9 @@
 
 **IMPORTANT:** This application requires at least 8GB of RAM and 2 core CPU to operate properly. Make sure you're environment has these requirements.
 
-Steps - 
+For persistent storage, you'll be needing around 2 GB of storage for smooth operation with the base variant. You can modify the storage requirements through the application definition during deployment.
 
+Steps - 
 1. Select catalog application.
 2. Populate Secret and config map accordingly.
 3. Deploy the application.

@@ -6,6 +6,10 @@ spec:
   components:
     - name: taiga-gateway 
       type: webservice 
+      dependsOn:
+        - env-vars
+        - taiga-events
+        - taiga-back
       properties: 
         image: nginx:1.19-alpine
         cpu: "100m"
@@ -121,8 +125,6 @@ spec:
               postgresPassword: taiga
               postgresUser: taiga
             data: 
-              # All secrets are base64 encoded
-              # postgresPassword: dGFpZ2EK 
               rabbitmqPass: dGFpZ2EK
               taigaSecretKey: c2VjcmV0LWtleQo=
               erlangCookie: c2VjcmV0LWVybGFuZy1jb29raWUK
@@ -133,10 +135,8 @@ spec:
             data:
               postgresDb: taiga
               postgresHost: taiga-db
-              # postgresUser: taiga
               rabbitmqUser: taiga
               max_age: "360"
-              # taigaSitesDomain: nginx-ingress-cj8815hg2gg97uokhutg.apps.mumbai1.eks.zone.napptive.dev
               taigaSitesScheme: https
               taigaSubpath: ""
               rabbitmq_vhost: taiga
@@ -186,7 +186,7 @@ spec:
                 subPath: taigaDB
                 resources:
                   requests:
-                    storage: 1Gi
+                    storage: 1G
     - name: taiga-async-rabbitmq
       type: webservice 
       properties:
@@ -240,6 +240,10 @@ spec:
                   requests:
                     storage: 100Mi
     - name: taiga-async
+      dependsOn:
+        - taiga-async-rabbitmq
+        - taiga-events-rabbitmq
+        - taiga-db
       type: webservice 
       properties: 
         image: taigaio/taiga-back:latest
@@ -356,6 +360,10 @@ spec:
                     storage: 100Mi
     - name: taiga-back
       type: webservice
+      dependsOn:
+        - taiga-db
+        - taiga-events-rabbitmq
+        - taiga-async-rabbitmq
       properties:
         image: taigaio/taiga-back:latest 
         cpu: "250m"
@@ -523,6 +531,8 @@ spec:
                     storage: 100Mi
     - name: taiga-events
       type: webservice
+      dependsOn: 
+        - taiga-events-rabbitmq
       traits: 
         - type: service-binding 
           properties:
